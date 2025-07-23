@@ -13,6 +13,7 @@ type SameFields struct {
 type Student struct {
 	SameFields
 	Hostel  string `json:"hostel"`
+	Role    string `json:"role"`
 	College string `json:"college"`
 	RefId   string `json:"refId"`
 }
@@ -20,6 +21,7 @@ type Student struct {
 type TeachAsst struct {
 	SameFields
 	Department string `json:"department"`
+	Role       string `json:"role"`
 	College    string `json:"college"`
 	StaffId    string `json:"staffId"`
 }
@@ -27,11 +29,13 @@ type TeachAsst struct {
 type Lecturer struct {
 	SameFields
 	Department string `json:"department"`
+	Role       string `json:"role"`
 	College    string `json:"college"`
 	StaffId    string `json:"staffId"`
 }
 
 type Other struct {
 	SameFields
-	StaffId    string `json:"staffId"`
+	Role    string `json:"role"`
+	StaffId string `json:"staffId"`
 }
