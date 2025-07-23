@@ -10,13 +10,19 @@ func SetupAuthRoutes(app *fiber.App, client *mongo.Client) {
 	authCollection := client.Database("Rapport").Collection("Users")
 	auth := app.Group("/auth")
 
-	auth.Post("/student", handlers.StudentProfileSetup)
+	auth.Post("/student", func(c *fiber.Ctx) error {
+		return handlers.StudentProfileSetup(c, authCollection)
+	})
 
 	auth.Post("/lecturer", func (c *fiber.Ctx) error  {
 		return handlers.LecturerProfileSetup(c, authCollection)
 	})
 
-	auth.Post("/TA", handlers.SetupTeachAsst)
+	auth.Post("/TA", func (c *fiber.Ctx) error {
+		return handlers.SetupTeachAsst(c, authCollection)
+	})
 
-	auth.Post("/other", handlers.SetupOther)
+	auth.Post("/other", func(c *fiber.Ctx) error {
+		return handlers.SetupOther(c, authCollection)
+	})
 }

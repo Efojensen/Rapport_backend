@@ -3,14 +3,24 @@ package handlers
 import (
 	"github.com/Efojensen/rapport.git/models"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetupOther(c *fiber.Ctx) error {
+func SetupOther(c *fiber.Ctx, collection *mongo.Collection) error {
 	other := new(models.Other)
+	other.Role = "other"
 
 	if err := c.BodyParser(other); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": "Incorrect other body/fields",
+		})
+	}
+
+	_, err := collection.InsertOne(c.Context(), other)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"err": err,
 		})
 	}
 

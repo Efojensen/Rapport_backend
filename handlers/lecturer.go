@@ -16,7 +16,7 @@ func LecturerProfileSetup(c *fiber.Ctx, collection *mongo.Collection) error {
 		})
 	}
 
-	field, err := collection.InsertOne(c.Context(), lecturer)
+	_, err := collection.InsertOne(c.Context(), lecturer)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -26,6 +26,6 @@ func LecturerProfileSetup(c *fiber.Ctx, collection *mongo.Collection) error {
 
 	return c.JSON(fiber.Map{
 		"msg":      "New lecturer created successfully",
-		"lecturer": field,
+		"lecturer": lecturer,
 	})
 }
