@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/Efojensen/rapport.git/handlers"
+	"github.com/Efojensen/rapport.git/handlers/users"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 )

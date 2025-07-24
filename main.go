@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Efojensen/rapport.git/db"
+	"github.com/Efojensen/rapport.git/models"
 	"github.com/Efojensen/rapport.git/routes/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
@@ -13,7 +14,30 @@ import (
 func main() {
 	app := fiber.New()
 
-	// Websocket
+	emailService := models.NewSMTPEmailService(
+		"rapportsafety@gmail.com",
+		587,
+		"username",
+		"password",
+		"smtp.example.com",
+	)
+
+	app.Post("/send-email", func (c *fiber.Ctx) error {
+		to := c.FormValue("to")
+		subject := c.FormValue("subject")
+		body := c.FormValue("body")
+
+		if err := emailService.SendEmail(to, subject, body); err != nil {
+			return c.Status(500).JSON(fiber.Map{
+				"error": "Failed to send email",
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"message": "Email sent successfully",
+		})
+	})
+
 	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		for {
 			mt, msg, err := c.ReadMessage()
