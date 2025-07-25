@@ -4,20 +4,20 @@ import "github.com/go-mail/mail"
 
 type EmailService struct {
 	dialer *mail.Dialer
-	from string
+	to string
 }
 
-func NewSMTPEmailService(host string, port int, username, password, from string) *EmailService {
+func NewSMTPEmailService(host string, port int, username, password, to string) *EmailService {
 	return &EmailService{
 		dialer: mail.NewDialer(host, port, username, password),
-		from: from,
+		to: to,
 	}
 }
 
-func (es *EmailService) SendEmail(to, subject, body string) error {
+func (es *EmailService) SendEmail(from, subject, body string) error {
 	m := mail.NewMessage()
-	m.SetHeader("From", es.from)
-	m.SetHeader("To", to)
+	m.SetHeader("From", from)
+	m.SetHeader("To", es.to)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/html", body)
 

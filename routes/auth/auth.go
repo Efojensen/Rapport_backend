@@ -6,8 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SetupAuthRoutes(app *fiber.App, client *mongo.Client) {
-	authCollection := client.Database("Rapport").Collection("Users")
+func SetupAuthRoutes(app *fiber.App, authCollection *mongo.Collection) {
 	auth := app.Group("/auth")
 
 	auth.Post("/student", func(c *fiber.Ctx) error {

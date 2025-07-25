@@ -6,6 +6,7 @@ import (
 	"github.com/Efojensen/rapport.git/db"
 	"github.com/Efojensen/rapport.git/models"
 	"github.com/Efojensen/rapport.git/routes/auth"
+	"github.com/Efojensen/rapport.git/routes/email"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 )
@@ -14,30 +15,26 @@ import (
 func main() {
 	app := fiber.New()
 
+	mongoClient, sec_email := db.ConnectToDb()
+	userCollection := mongoClient.Database("Rapport").Collection("Users")
+
 	emailService := models.NewSMTPEmailService(
-		"rapportsafety@gmail.com",
+		sec_email,
 		587,
 		"username",
 		"password",
 		"smtp.example.com",
 	)
 
-	app.Post("/send-email", func (c *fiber.Ctx) error {
-		to := c.FormValue("to")
-		subject := c.FormValue("subject")
-		body := c.FormValue("body")
+	// TODO Implement the logic to get the actual user id in the mongoDb database
+	user, err := db.GetUserDetails("some-string", userCollection)
+	if err != nil {
+		log.Fatal("Something went wrong ")
+	}
 
-		if err := emailService.SendEmail(to, subject, body); err != nil {
-			return c.Status(500).JSON(fiber.Map{
-				"error": "Failed to send email",
-			})
-		}
+	email.SetupEmailRoutes(app, emailService, user)
 
-		return c.JSON(fiber.Map{
-			"message": "Email sent successfully",
-		})
-	})
-
+	// TODO Implement websockets for chat feature
 	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		for {
 			mt, msg, err := c.ReadMessage()
@@ -51,9 +48,7 @@ func main() {
 		}
 	}))
 
-	mongoClient := db.ConnectToDb()
-
-	auth.SetupAuthRoutes(app, mongoClient)
+	auth.SetupAuthRoutes(app, userCollection)
 
 	log.Fatal(app.Listen(":4000"))
 }

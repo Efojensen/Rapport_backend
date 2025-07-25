@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SendGenericEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser models.User) {
+func SendGenericEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser models.User) error {
 	user := sosUser.UserDetails()
 	fIndex := strings.IndexByte(user.Name, ' ')
 	var alertMsg string
@@ -87,4 +87,8 @@ func SendGenericEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser mo
 			`, alertMsg,
 		),
 	)
+
+	return c.JSON(fiber.Map{
+		"msg": "Email sent successfully",
+	})
 }
