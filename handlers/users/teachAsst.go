@@ -8,7 +8,7 @@ import (
 
 func SetupTeachAsst(c *fiber.Ctx, collection *mongo.Collection) error {
 	ta := new(models.TeachAsst)
-	ta.Role = "teaching assistant"
+	ta.Role = "TA"
 
 	if err := c.BodyParser(ta); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
