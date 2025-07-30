@@ -12,31 +12,65 @@ func SendGenericEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser mo
 	user := sosUser.UserDetails()
 	fIndex := strings.IndexByte(user.Name, ' ')
 	var alertMsg string
-	switch user.Role {
-	case "student":
-		alertMsg = fmt.Sprintf(
-			"Student %s of the college of %s residing at %s is requesting immediate assistance from %s. Contact %s at %s",
-			user.Name, *user.College, *user.Hostel, "loc", user.Name[:fIndex], user.PhoneNumber,
-		)
-	case "TA":
-		alertMsg = fmt.Sprintf(
-			"Teaching Assistant %s from the college of %s, is requesting immediate assistance from %s. Contact %s at %s.",
-			user.Name, *user.College, "loc", user.Name[:fIndex], user.PhoneNumber,
-		)
-	case "lecturer":
-		alertMsg = fmt.Sprintf(
-			"Lecturer %s from the college of %s, is requesting immediate assistance from %s. Contact %s at %s.",
-			user.Name, *user.College, "loc", user.Name[:fIndex], user.PhoneNumber,
-		)
-	default:
-		alertMsg = fmt.Sprintf(
-			"A member of staff by name %s is requesting immediate assistance from %s. Contact %s at %s.",
-			user.Name, "loc", user.Name[:fIndex], user.PhoneNumber,
-		)
+
+	// Get sender's email from the user data
+	var senderEmail string
+	switch v := sosUser.(type) {
+		case *models.Student:
+			senderEmail = v.Email
+		case *models.TeachAsst:
+			senderEmail = v.Email
+		case *models.Lecturer:
+			senderEmail = v.Email
+		case *models.Other:
+			senderEmail = v.Email
+		default:
+			senderEmail = "unknown@rapport.edu" // fallback
 	}
 
-	mailService.SendEmail(
-		"someEmailAddress",
+	switch user.Role {
+		case "student":
+			collegeInfo := "Unknown College"
+			hostelInfo := "Unknown Hostel"
+			if user.College != nil {
+				collegeInfo = *user.College
+			}
+			if user.Hostel != nil {
+				hostelInfo = *user.Hostel
+			}
+			alertMsg = fmt.Sprintf(
+				"Student %s of the college of %s residing at %s is requesting immediate assistance. Contact %s at %s",
+				user.Name, collegeInfo, hostelInfo, user.Name[:fIndex], user.PhoneNumber,
+			)
+		case "TA":
+			collegeInfo := "Unknown College"
+			if user.College != nil {
+				collegeInfo = *user.College
+			}
+			alertMsg = fmt.Sprintf(
+				"Teaching Assistant %s from the college of %s is requesting immediate assistance. Contact %s at %s.",
+				user.Name, collegeInfo, user.Name[:fIndex], user.PhoneNumber,
+			)
+		case "lecturer":
+			collegeInfo := "Unknown College"
+			if user.College != nil {
+				collegeInfo = *user.College
+			}
+			alertMsg = fmt.Sprintf(
+				"Lecturer %s from the college of %s is requesting immediate assistance. Contact %s at %s.",
+				user.Name, collegeInfo, user.Name[:fIndex], user.PhoneNumber,
+			)
+		default:
+			alertMsg = fmt.Sprintf(
+				"A member of staff by name %s is requesting immediate assistance. Contact %s at %s.",
+				user.Name, user.Name[:fIndex], user.PhoneNumber,
+			)
+	}
+
+	// Always send SOS emails to rapportSafety@gmail.com
+	mailService.SendEmailToRecipient(
+		senderEmail,
+		"jensena231@gmail.com",
 		"SOS Distress call",
 		fmt.Sprintf(
 			`

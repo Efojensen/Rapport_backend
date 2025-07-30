@@ -32,6 +32,7 @@ func (std *Student) UserDetails() SOS_Alert {
         PhoneNumber: std.PhoneNumber,
         Role: std.Role,
         Hostel: &std.Hostel,
+        College: &std.College,
     }
 }
 

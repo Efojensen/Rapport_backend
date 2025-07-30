@@ -35,3 +35,14 @@ func (es *EmailService) SendEmail(from, subject, body string) error {
 
 	return es.dialer.DialAndSend(m)
 }
+
+// SendEmailToRecipient sends an email to a specific recipient (overriding the default 'to' field)
+func (es *EmailService) SendEmailToRecipient(from, to, subject, body string) error {
+	m := mail.NewMessage()
+	m.SetHeader("From", from)
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", body)
+
+	return es.dialer.DialAndSend(m)
+}
