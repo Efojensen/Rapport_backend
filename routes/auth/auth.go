@@ -9,6 +9,9 @@ import (
 func SetupAuthRoutes(app *fiber.App, authCollection *mongo.Collection) {
 	auth := app.Group("/auth")
 
+	auth.Get("/", func(c *fiber.Ctx) error {
+		return handlers.GetAllUsers(c, authCollection)
+	})
 	auth.Post("/student", func(c *fiber.Ctx) error {
 		return handlers.StudentProfileSetup(c, authCollection)
 	})

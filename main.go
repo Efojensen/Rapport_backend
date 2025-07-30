@@ -67,6 +67,6 @@ func main() {
 
 	log.Println("🚀 Rapport server starting on port 4000")
 	log.Println("📱 WebSocket endpoint: ws://localhost:4000/ws")
-	log.Println("🔗 API endpoints: http://localhost:4000/api")
+	log.Println("🔗 API endpoints: http://localhost:4000")
 	log.Fatal(app.Listen(":4000"))
 }

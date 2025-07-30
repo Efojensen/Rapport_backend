@@ -9,7 +9,7 @@ import (
 
 // SetupChatRoutes configures all chat-related routes
 func SetupChatRoutes(app *fiber.App, chatCollection *mongo.Collection, roomCollection *mongo.Collection, hub *models.Hub) {
-	chatGroup := app.Group("/api/chat")
+	chatGroup := app.Group("/chat")
 
 	// Single Chat Routes
 	chatGroup.Post("/single/create", func(c *fiber.Ctx) error {
