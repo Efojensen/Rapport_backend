@@ -45,21 +45,56 @@ func ConnectToDb() (*mongo.Client, string) {
 func GetUserDetails(id string, collection *mongo.Collection) (models.User, error) {
 	filter := bson.M{"_id": id}
 
-	var user models.User
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	err := collection.FindOne(ctx, filter).Decode(&user)
 
+	// First, get the role to determine which struct to use
+	var roleDoc struct {
+		Role string `bson:"role"`
+	}
+	err := collection.FindOne(ctx, filter).Decode(&roleDoc)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			log.Println("User does not exist.")
 			return nil, err
 		}
-
-		log.Println("Err: ", err)
+		log.Println("Error getting user role: ", err)
 		return nil, err
 	}
 
-	return user, nil
+	// Now decode into the appropriate struct based on role
+	switch roleDoc.Role {
+	case "student":
+		var student models.Student
+		err := collection.FindOne(ctx, filter).Decode(&student)
+		if err != nil {
+			log.Println("Error decoding student: ", err)
+			return nil, err
+		}
+		return &student, nil
+	case "TA":
+		var ta models.TeachAsst
+		err := collection.FindOne(ctx, filter).Decode(&ta)
+		if err != nil {
+			log.Println("Error decoding TA: ", err)
+			return nil, err
+		}
+		return &ta, nil
+	case "lecturer":
+		var lecturer models.Lecturer
+		err := collection.FindOne(ctx, filter).Decode(&lecturer)
+		if err != nil {
+			log.Println("Error decoding lecturer: ", err)
+			return nil, err
+		}
+		return &lecturer, nil
+	default:
+		var other models.Other
+		err := collection.FindOne(ctx, filter).Decode(&other)
+		if err != nil {
+			log.Println("Error decoding other user: ", err)
+			return nil, err
+		}
+		return &other, nil
+	}
 }

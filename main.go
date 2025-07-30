@@ -34,23 +34,17 @@ func main() {
 	go hub.Run()
 
 	// Email service setup
+	// Note: You'll need to set proper SMTP credentials in your environment
 	emailService := models.NewSMTPEmailService(
-		sec_email,
-		587,
-		"username",
-		"password",
-		"smtp.gmail.com",
+		"smtp.gmail.com", // host
+		587,              // port
+		sec_email,        // username (your email)
+		"your-app-password", // password (use app-specific password for Gmail)
+		"default@rapport.edu", // default recipient (not used for SOS emails)
 	)
 
-	// TODO Implement the logic to get the actual user id in the mongoDb database
-	user, err := db.GetUserDetails("some-string", userCollection)
-	if err != nil {
-		log.Printf("Warning: Could not get user details: %v", err)
-		// Don't fatal here, continue with other services
-	}
-
 	// Setup routes
-	email.SetupEmailRoutes(app, emailService, user)
+	email.SetupEmailRoutes(app, emailService, userCollection)
 	auth.SetupAuthRoutes(app, userCollection)
 	chat.SetupChatRoutes(app, chatCollection, roomCollection, hub)
 
