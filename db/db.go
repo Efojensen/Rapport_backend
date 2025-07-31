@@ -10,11 +10,12 @@ import (
 	"github.com/Efojensen/rapport.git/models"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func ConnectToDb() (*mongo.Client, string) {
+func ConnectToDb() (*mongo.Client, string, string) {
 	err := godotenv.Load(".env")
 
 	if err != nil {
@@ -22,7 +23,8 @@ func ConnectToDb() (*mongo.Client, string) {
 	}
 
 	mongoUrl := os.Getenv("MONGODB_URI")
-	sec_service := os.Getenv("SEC_SERVICE")
+	pwd := os.Getenv("EMAIL_PWD")
+	sec_service := os.Getenv("SEC_SERVICE_2")
 
 	clientOptions := options.Client().ApplyURI(mongoUrl)
 
@@ -39,11 +41,18 @@ func ConnectToDb() (*mongo.Client, string) {
 	}
 
 	fmt.Printf("Connection to Database successful")
-	return client, sec_service
+	return client, sec_service, pwd
 }
 
 func GetUserDetails(id string, collection *mongo.Collection) (models.User, error) {
-	filter := bson.M{"_id": id}
+	// Convert string ID to ObjectID
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Printf("Invalid ObjectID format: %s, error: %v", id, err)
+		return nil, fmt.Errorf("invalid user ID format")
+	}
+
+	filter := bson.M{"_id": objectID}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -52,7 +61,8 @@ func GetUserDetails(id string, collection *mongo.Collection) (models.User, error
 	var roleDoc struct {
 		Role string `bson:"role"`
 	}
-	err := collection.FindOne(ctx, filter).Decode(&roleDoc)
+
+	err = collection.FindOne(ctx, filter).Decode(&roleDoc)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			log.Println("User does not exist.")

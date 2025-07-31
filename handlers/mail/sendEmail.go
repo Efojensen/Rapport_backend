@@ -70,7 +70,7 @@ func SendGenericEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser mo
 	// Always send SOS emails to rapportSafety@gmail.com
 	mailService.SendEmailToRecipient(
 		senderEmail,
-		"jensena231@gmail.com",
+		"sedemadjei419@gmail.com",
 		"SOS Distress call",
 		fmt.Sprintf(
 			`

@@ -24,7 +24,7 @@ func main() {
 	}))
 
 	// Database connections
-	mongoClient, sec_email := db.ConnectToDb()
+	mongoClient, sec_email, pwd := db.ConnectToDb()
 	userCollection := mongoClient.Database("Rapport").Collection("Users")
 	chatCollection := mongoClient.Database("Rapport").Collection("Chats")
 	roomCollection := mongoClient.Database("Rapport").Collection("Rooms")
@@ -36,11 +36,11 @@ func main() {
 	// Email service setup
 	// Note: You'll need to set proper SMTP credentials in your environment
 	emailService := models.NewSMTPEmailService(
-		"smtp.gmail.com", // host
-		587,              // port
-		sec_email,        // username (your email)
-		"your-app-password", // password (use app-specific password for Gmail)
-		"default@rapport.edu", // default recipient (not used for SOS emails)
+		"smtp.gmail.com",             // host
+		587,                          // port
+		sec_email,                    // username (your email)
+		pwd,                          // password (use app-specific password for Gmail)
+		"jensenasafoadjei@gmail.com", // default recipient (not used for SOS emails)
 	)
 
 	// Setup routes
@@ -54,7 +54,7 @@ func main() {
 	// Health check endpoint
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
-			"status": "ok",
+			"status":  "ok",
 			"message": "Rapport API is running",
 		})
 	})
