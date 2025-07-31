@@ -16,13 +16,13 @@ import "github.com/go-mail/mail"
 
 type EmailService struct {
 	dialer *mail.Dialer
-	to string
+	to     string
 }
 
 func NewSMTPEmailService(host string, port int, username, password, to string) *EmailService {
 	return &EmailService{
 		dialer: mail.NewDialer(host, port, username, password),
-		to: to,
+		to:     to,
 	}
 }
 

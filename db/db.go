@@ -24,7 +24,7 @@ func ConnectToDb() (*mongo.Client, string, string) {
 
 	mongoUrl := os.Getenv("MONGODB_URI")
 	pwd := os.Getenv("EMAIL_PWD")
-	sec_service := os.Getenv("SEC_SERVICE_2")
+	sec_service := os.Getenv("SEC_SERVICE")
 
 	clientOptions := options.Client().ApplyURI(mongoUrl)
 
@@ -41,6 +41,7 @@ func ConnectToDb() (*mongo.Client, string, string) {
 	}
 
 	fmt.Printf("Connection to Database successful")
+	log.Println(sec_service, pwd)
 	return client, sec_service, pwd
 }
 

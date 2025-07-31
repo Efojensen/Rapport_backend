@@ -38,6 +38,8 @@ func SetupEmailRoutes(app *fiber.App, mailService *models.EmailService, userColl
 			})
 		}
 
+		c.JSON(user)
+
 		// Send the SOS email
 		return handlers.SendGenericEmail(c, mailService, user)
 	})

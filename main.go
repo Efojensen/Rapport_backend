@@ -33,14 +33,12 @@ func main() {
 	hub := models.NewHub()
 	go hub.Run()
 
-	// Email service setup
-	// Note: You'll need to set proper SMTP credentials in your environment
 	emailService := models.NewSMTPEmailService(
 		"smtp.gmail.com",             // host
 		587,                          // port
-		sec_email,                    // username (your email)
+		"Sedemadjei419@gmail.com", 	  // username (your email)
 		pwd,                          // password (use app-specific password for Gmail)
-		"jensenasafoadjei@gmail.com", // default recipient (not used for SOS emails)
+		sec_email,                    // default recipient (not used for SOS emails)
 	)
 
 	// Setup routes

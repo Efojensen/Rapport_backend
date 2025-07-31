@@ -68,9 +68,8 @@ func SendGenericEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser mo
 	}
 
 	// Always send SOS emails to rapportSafety@gmail.com
-	mailService.SendEmailToRecipient(
+	err := mailService.SendEmail(
 		senderEmail,
-		"sedemadjei419@gmail.com",
 		"SOS Distress call",
 		fmt.Sprintf(
 			`
@@ -121,6 +120,12 @@ func SendGenericEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser mo
 			`, alertMsg,
 		),
 	)
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"err": err,
+		})
+	}
 
 	return c.JSON(fiber.Map{
 		"msg": "Email sent successfully",
