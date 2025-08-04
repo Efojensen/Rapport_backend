@@ -14,6 +14,8 @@ type SameFields struct {
 	BirthDate   time.Time          `json:"birthDate" bson:"birthDate"`
 	PhoneNumber string             `json:"phoneNumber" bson:"phoneNumber"`
 	Role        string             `json:"role" bson:"role"`
+	Username    string             `json:"username" bson:"username"`
+	Password    string             `json:"password" bson:"password"`
 }
 
 type SOS_Alert struct {

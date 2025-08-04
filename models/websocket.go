@@ -9,11 +9,11 @@ import (
 )
 
 type WSMessage struct {
-	Type    string      `json:"type"`
-	RoomId  string      `json:"roomId"`
-	UserId  string      `json:"userId"`
-	Data    interface{} `json:"data"`
-	Chat    *Chat       `json:"chat,omitempty"`
+	Type   string      `json:"type"`
+	RoomId string      `json:"roomId"`
+	UserId string      `json:"userId"`
+	Data   interface{} `json:"data"`
+	Chat   *Chat       `json:"chat,omitempty"`
 }
 
 type Client struct {
@@ -62,7 +62,7 @@ func (h *Hub) registerClient(client *Client) {
 	defer h.mutex.Unlock()
 
 	h.Clients[client.UserId] = client
-	
+
 	if h.Rooms[client.RoomId] == nil {
 		h.Rooms[client.RoomId] = make(map[string]*Client)
 	}

@@ -12,19 +12,23 @@ func SetupAuthRoutes(app *fiber.App, authCollection *mongo.Collection) {
 	auth.Get("/", func(c *fiber.Ctx) error {
 		return handlers.GetAllUsers(c, authCollection)
 	})
-	auth.Post("/student", func(c *fiber.Ctx) error {
+	auth.Post("/register/student", func(c *fiber.Ctx) error {
 		return handlers.StudentProfileSetup(c, authCollection)
 	})
 
-	auth.Post("/lecturer", func (c *fiber.Ctx) error  {
+	auth.Post("/register/lecturer", func (c *fiber.Ctx) error  {
 		return handlers.LecturerProfileSetup(c, authCollection)
 	})
 
-	auth.Post("/TA", func (c *fiber.Ctx) error {
+	auth.Post("/register/TA", func (c *fiber.Ctx) error {
 		return handlers.SetupTeachAsst(c, authCollection)
 	})
 
-	auth.Post("/other", func(c *fiber.Ctx) error {
+	auth.Post("/register/other", func(c *fiber.Ctx) error {
 		return handlers.SetupOther(c, authCollection)
+	})
+
+	auth.Post("/login", func(c *fiber.Ctx) error {
+		return handlers.UserLogin(c, authCollection)
 	})
 }
