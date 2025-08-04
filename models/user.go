@@ -2,12 +2,9 @@ package models
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type SameFields struct {
-	ID          primitive.ObjectID `json:"_id" bson:"_id"`
 	FirstName   string             `json:"firstName" bson:"firstName"`
 	LastName    string             `json:"lastName" bson:"lastName"`
 	Email       string             `json:"email" bson:"email"`
@@ -27,10 +24,10 @@ type SOS_Alert struct {
 }
 
 type Student struct {
-	SameFields
-	Hostel  string `json:"hostel" bson:"hostel"`
-	College string `json:"college" bson:"college"`
-	RefId   string `json:"refId" bson:"refId"`
+	SameFields `bson:",inline"`
+	Hostel     string `json:"hostel" bson:"hostel"`
+	College    string `json:"college" bson:"college"`
+	RefId      string `json:"refId" bson:"refId"`
 }
 
 func (std *Student) UserDetails() SOS_Alert {
@@ -44,7 +41,7 @@ func (std *Student) UserDetails() SOS_Alert {
 }
 
 type TeachAsst struct {
-	SameFields
+	SameFields `bson:",inline"`
 	Department string `json:"department" bson:"department"`
 	College    string `json:"college" bson:"college"`
 	StaffId    string `json:"staffId" bson:"staffId"`
@@ -60,7 +57,7 @@ func (ta *TeachAsst) UserDetails() SOS_Alert {
 }
 
 type Lecturer struct {
-	SameFields
+	SameFields `bson:",inline"`
 	Department string `json:"department" bson:"department"`
 	College    string `json:"college" bson:"college"`
 	StaffId    string `json:"staffId" bson:"staffId"`
@@ -76,8 +73,8 @@ func (lec *Lecturer) UserDetails() SOS_Alert {
 }
 
 type Other struct {
-	SameFields
-	StaffId string `json:"staffId" bson:"staffId"`
+	SameFields `bson:",inline"`
+	StaffId    string `json:"staffId" bson:"staffId"`
 }
 
 func (otr *Other) UserDetails() SOS_Alert {

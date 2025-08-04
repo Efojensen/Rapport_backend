@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Efojensen/rapport.git/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
@@ -15,14 +14,15 @@ func CheckUserCredByEmail(email, password string, collection *mongo.Collection) 
 	filter := bson.M{"email": email}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-
 	defer cancel()
 
-	// Get the user by email and check if the password matches
+	// First, get the role to determine which struct to use
+	var roleDoc struct {
+		Role     string `bson:"role"`
+		Password string `bson:"password"`
+	}
 
-	var user models.SameFields
-
-	err := collection.FindOne(ctx, filter).Decode(&user)
+	err := collection.FindOne(ctx, filter).Decode(&roleDoc)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return errors.New("user not found")
@@ -30,10 +30,10 @@ func CheckUserCredByEmail(email, password string, collection *mongo.Collection) 
 		return err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-
+	// Verify password
+	err = bcrypt.CompareHashAndPassword([]byte(roleDoc.Password), []byte(password))
 	if err != nil {
-		return err
+		return errors.New("invalid credentials")
 	}
 
 	return nil
@@ -43,13 +43,15 @@ func CheckUserCredByUsername(username, password string, collection *mongo.Collec
 	filter := bson.M{"username": username}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-
 	defer cancel()
 
-	var user models.SameFields
+	// First, get the role to determine which struct to use
+	var roleDoc struct {
+		Role     string `bson:"role"`
+		Password string `bson:"password"`
+	}
 
-	err := collection.FindOne(ctx, filter).Decode(&user)
-
+	err := collection.FindOne(ctx, filter).Decode(&roleDoc)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return errors.New("user not found")
@@ -57,10 +59,10 @@ func CheckUserCredByUsername(username, password string, collection *mongo.Collec
 		return err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-
+	// Verify password
+	err = bcrypt.CompareHashAndPassword([]byte(roleDoc.Password), []byte(password))
 	if err != nil {
-		return err
+		return errors.New("invalid credentials")
 	}
 
 	return nil
