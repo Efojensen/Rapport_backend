@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -25,4 +26,21 @@ func CreateJWT(emailOrUsername string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func VerifyJWT(token string) error {
+	secretKey := os.Getenv("SECRET_KEY")
+	ptrToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return secretKey, nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if !ptrToken.Valid {
+		return errors.New("invalid token")
+	}
+
+	return nil
 }
