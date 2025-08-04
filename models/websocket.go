@@ -112,26 +112,21 @@ func (h *Hub) broadcastToRoom(message WSMessage) {
 func (c *Client) WritePump() {
 	defer c.Conn.Close()
 
-	for {
-		select {
-		case message, ok := <-c.Send:
-			if !ok {
-				c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
-				return
-			}
+	for message := range c.Send {
+		data, err := json.Marshal(message)
+		if err != nil {
+			log.Printf("Error marshaling message: %v", err)
+			continue
+		}
 
-			data, err := json.Marshal(message)
-			if err != nil {
-				log.Printf("Error marshaling message: %v", err)
-				continue
-			}
-
-			if err := c.Conn.WriteMessage(websocket.TextMessage, data); err != nil {
-				log.Printf("Error writing message: %v", err)
-				return
-			}
+		if err := c.Conn.WriteMessage(websocket.TextMessage, data); err != nil {
+			log.Printf("Error writing message: %v", err)
+			return
 		}
 	}
+
+	// Channel closed, send close message
+	c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 }
 
 func (c *Client) ReadPump(hub *Hub) {

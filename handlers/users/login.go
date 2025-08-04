@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/Efojensen/rapport.git/db"
+	handlers "github.com/Efojensen/rapport.git/handlers/jwt"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -32,5 +33,14 @@ func UserLogin(c *fiber.Ctx, collection *mongo.Collection) error {
 		})
 	}
 
-	return nil
+	jwtToken, err := handlers.CreateJWT(userCred.UsernameOrEmail)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{
+		"msg": "User login successful",
+		"JWT": jwtToken,
+	})
 }
