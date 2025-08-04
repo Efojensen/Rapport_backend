@@ -1,8 +1,7 @@
-package handlers
+package jwt
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 
 func CreateJWT(emailOrUsername string) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
-	fmt.Println(secretKey)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
@@ -19,7 +17,7 @@ func CreateJWT(emailOrUsername string) (string, error) {
 			"exp": time.Now().Add(time.Hour * 24).Unix(),
 		},
 	)
-	tokenString, err := token.SignedString(secretKey)
+	tokenString, err := token.SignedString([]byte(secretKey))
 
 	if err != nil {
 		return "", err
@@ -31,7 +29,7 @@ func CreateJWT(emailOrUsername string) (string, error) {
 func VerifyJWT(token string) error {
 	secretKey := os.Getenv("SECRET_KEY")
 	ptrToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		return secretKey, nil
+		return []byte(secretKey), nil
 	})
 
 	if err != nil {

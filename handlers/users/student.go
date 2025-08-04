@@ -27,7 +27,7 @@ func StudentProfileSetup(c *fiber.Ctx, collection *mongo.Collection) error {
 
 	_, err = collection.InsertOne(c.Context(), student)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"err": err})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"err": err.Error()})
 	}
 
 

@@ -31,7 +31,7 @@ func SetupOther(c *fiber.Ctx, collection *mongo.Collection) error {
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err": err,
+			"err": err.Error(),
 		})
 	}
 

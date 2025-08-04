@@ -30,7 +30,7 @@ func SetupTeachAsst(c *fiber.Ctx, collection *mongo.Collection) error {
 	_, err = collection.InsertOne(c.Context(), ta)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err": err,
+			"err": err.Error(),
 		})
 	}
 

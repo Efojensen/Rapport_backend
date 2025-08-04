@@ -123,7 +123,7 @@ func SendGenericEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser mo
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err": err,
+			"err": err.Error(),
 		})
 	}
 
