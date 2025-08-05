@@ -1,14 +1,62 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+)
 
 type SOSReport struct {
-	Location Location  `json:"location"`
+	Location GeoLocation  `json:"location"`
 	SentTime time.Time `json:"sentTime"`
 }
 
-type Location struct {
+type GeoLocation struct {
 	Longitude float64 `json:"longitude"`
 	Latitude  float64 `json:"latitude"`
-	Accuracy  float64 `json:"accuracy"`
+}
+
+type Location struct {
+	Name     string `json:"name"`
+	Country  string `json:"country"`
+	Suburb   string `json:"suburb"`
+	Street   string `json:"street"`
+	Distance int    `json:"distance"`
+	City     string `json:"city"`
+	Address  string `json:"formatted"`
+}
+
+func (report *SOSReport) GetLatLongAddress() (*Location, error) {
+	geoApi := os.Getenv("GEOAPIFY_KEY")
+	lat := strconv.FormatFloat(report.Location.Latitude, 'f', -1, 64)
+	long := strconv.FormatFloat(report.Location.Longitude, 'f', -1, 64)
+
+	getMethod := fmt.Sprintf("https://api.geoapify.com/v1/geocode/reverse?lat=%s&lon=%s&apiKey=%s", lat, long, geoApi)
+
+	res, err := http.Get(getMethod)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var SosLoc Location
+	err = json.Unmarshal(body, &SosLoc)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &SosLoc, nil
 }
