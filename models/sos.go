@@ -11,8 +11,8 @@ import (
 )
 
 type SOSReport struct {
-	Location GeoLocation  `json:"location"`
-	SentTime time.Time `json:"sentTime"`
+	GeoLocation GeoLocation `json:"location"`
+	SentTime    time.Time   `json:"sentTime"`
 }
 
 type GeoLocation struct {
@@ -32,12 +32,12 @@ type Location struct {
 
 func (report *SOSReport) GetLatLongAddress() (*Location, error) {
 	geoApi := os.Getenv("GEOAPIFY_KEY")
-	lat := strconv.FormatFloat(report.Location.Latitude, 'f', -1, 64)
-	long := strconv.FormatFloat(report.Location.Longitude, 'f', -1, 64)
+	lat := strconv.FormatFloat(report.GeoLocation.Latitude, 'f', -1, 64)
+	long := strconv.FormatFloat(report.GeoLocation.Longitude, 'f', -1, 64)
 
-	getMethod := fmt.Sprintf("https://api.geoapify.com/v1/geocode/reverse?lat=%s&lon=%s&apiKey=%s", lat, long, geoApi)
+	httpMethod := fmt.Sprintf("https://api.geoapify.com/v1/geocode/reverse?lat=%s&lon=%s&apiKey=%s", lat, long, geoApi)
 
-	res, err := http.Get(getMethod)
+	res, err := http.Get(httpMethod)
 
 	if err != nil {
 		return nil, err
