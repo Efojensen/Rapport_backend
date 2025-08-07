@@ -1,6 +1,8 @@
 package email
 
 import (
+	"time"
+
 	"github.com/Efojensen/rapport.git/db"
 	handlers "github.com/Efojensen/rapport.git/handlers/mail"
 	"github.com/Efojensen/rapport.git/models"
@@ -11,11 +13,12 @@ import (
 func SetupEmailRoutes(app *fiber.App, mailService *models.EmailService, userCollection *mongo.Collection) {
 	mail := app.Group("/mail")
 
-	// SOS email endpoint - expects userId in request body
+	// SOS email endpoint - expects userId and optional location data in request body
 	mail.Post("/sos", func(c *fiber.Ctx) error {
-		// Parse the userId from request body
+		// Parse the request body
 		var req struct {
-			UserId string `json:"userId"`
+			UserId   string              `json:"userId"`
+			Location *models.GeoLocation `json:"location,omitempty"`
 		}
 
 		if err := c.BodyParser(&req); err != nil {
@@ -38,9 +41,16 @@ func SetupEmailRoutes(app *fiber.App, mailService *models.EmailService, userColl
 			})
 		}
 
-		c.JSON(user)
+		// Create SOS report with location if provided
+		var sosReport *models.SOSReport
+		if req.Location != nil {
+			sosReport = &models.SOSReport{
+				GeoLocation: *req.Location,
+				SentTime:    time.Now(),
+			}
+		}
 
-		// Send the SOS email
-		return handlers.SendGenericEmail(c, mailService, user)
+		// Send the SOS email with location data
+		return handlers.SendSOSEmail(c, mailService, user, sosReport)
 	})
 }
