@@ -19,7 +19,7 @@ func ConnectToDb() (*mongo.Client, string, string) {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 
 	mongoUrl := os.Getenv("MONGODB_URI")
