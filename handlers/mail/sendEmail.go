@@ -19,7 +19,7 @@ func SendSOSEmail(c *fiber.Ctx, mailService *models.EmailService, sosUser models
 	if sosReport != nil {
 		location, err := sosReport.GetLatLongAddress()
 		if err == nil && location != nil {
-			locationInfo = fmt.Sprintf("<br><strong>📍Location Details</strong><br>    Address: %s<br>    City: %s<br>    Suburb: %s<br>    Country: %s<br>    Coordinates: %.6f, %.6f",
+			locationInfo = fmt.Sprintf("<br><strong>📍Location Details</strong><br>----Address: %s<br>----City: %s<br>----Suburb: %s<br>----Country: %s<br>----Coordinates: %.6f, %.6f",
 				location.Results[0].Properties.Address, location.Results[0].Properties.City, location.Results[0].Properties.Suburb, location.Results[0].Properties.Country,
 				sosReport.GeoLocation.Latitude, sosReport.GeoLocation.Longitude)
 		} else {
