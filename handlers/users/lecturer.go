@@ -11,6 +11,12 @@ func LecturerProfileSetup(c *fiber.Ctx, collection *mongo.Collection) error {
 	lecturer := new(models.Lecturer)
 	lecturer.Role = "lecturer"
 
+	if err := c.BodyParser(lecturer); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"err": "Invalid lecturer body",
+		})
+	}
+
 	hash, err := secure.HashPassword(lecturer.Password)
 
 	if err != nil {
@@ -20,12 +26,6 @@ func LecturerProfileSetup(c *fiber.Ctx, collection *mongo.Collection) error {
 	}
 
 	lecturer.Password = hash
-
-	if err := c.BodyParser(lecturer); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err": "Invalid lecturer body",
-		})
-	}
 
 	_, err = collection.InsertOne(c.Context(), lecturer)
 

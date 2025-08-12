@@ -20,7 +20,7 @@ func SetupAuthRoutes(app *fiber.App, authCollection *mongo.Collection) {
 		return handlers.LecturerProfileSetup(c, authCollection)
 	})
 
-	auth.Post("/register/TA", func (c *fiber.Ctx) error {
+	auth.Post("/register/ta", func (c *fiber.Ctx) error {
 		return handlers.SetupTeachAsst(c, authCollection)
 	})
 
