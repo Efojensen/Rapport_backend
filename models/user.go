@@ -13,6 +13,7 @@ type SameFields struct {
 	Role        string             `json:"role" bson:"role"`
 	Username    string             `json:"username" bson:"username"`
 	Password    string             `json:"password" bson:"password"`
+	Avatar      string             `json:"avatar" bson:"avatar"`
 }
 
 type SOS_Alert struct {
