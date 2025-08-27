@@ -2,9 +2,12 @@ package models
 
 import (
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type SameFields struct {
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
 	FirstName   string             `json:"firstName" bson:"firstName"`
 	LastName    string             `json:"lastName" bson:"lastName"`
 	Email       string             `json:"email" bson:"email"`
