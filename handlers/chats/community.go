@@ -13,9 +13,9 @@ import (
 // CreateCommunityChat creates a college/department-wide community chat
 func CreateCommunityChat(c *fiber.Ctx, roomCollection *mongo.Collection) error {
 	var req struct {
-		Name      string `json:"name"`
-		CreatedBy string `json:"createdBy"`
-		College   string `json:"college,omitempty"`
+		Name       string `json:"name"`
+		CreatedBy  string `json:"createdBy"`
+		College    string `json:"college,omitempty"`
 		Department string `json:"department,omitempty"`
 	}
 
