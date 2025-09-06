@@ -38,7 +38,7 @@ func SetupChatRoutes(app *fiber.App, chatCollection *mongo.Collection, roomColle
 		return chats.CreateCommunityChat(c, roomCollection)
 	})
 	chatGroup.Get("/community", func(c *fiber.Ctx) error {
-		return chats.GetCommunityChats(c, roomCollection)
+		return chats.GetCommunityChats(c, chatCollection)
 	})
 	chatGroup.Post("/community/:roomId/join", func(c *fiber.Ctx) error {
 		return chats.JoinCommunityChat(c, roomCollection)

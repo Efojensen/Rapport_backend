@@ -51,8 +51,7 @@ func CreateCommunityChat(c *fiber.Ctx, roomCollection *mongo.Collection) error {
 // GetCommunityChats retrieves all community chats
 func GetCommunityChats(c *fiber.Ctx, roomCollection *mongo.Collection) error {
 	filter := bson.M{
-		"type":     models.CommunityChat,
-		"isActive": true,
+		"roomId":   "68bc5cbbcd8d68664a8220fa",
 	}
 
 	cursor, err := roomCollection.Find(c.Context(), filter)
@@ -63,7 +62,7 @@ func GetCommunityChats(c *fiber.Ctx, roomCollection *mongo.Collection) error {
 	}
 	defer cursor.Close(c.Context())
 
-	var rooms []models.Room
+	var rooms []models.Chat
 	if err = cursor.All(c.Context(), &rooms); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to decode community chats",
