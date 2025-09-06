@@ -23,10 +23,11 @@ func UserLogin(c *fiber.Ctx, collection *mongo.Collection) error {
 
 	// Todo: Database call to find a user with matching email or password
 	var err error
+	var uid string
 	if strings.Contains(userCred.UsernameOrEmail, "@") {
-		err = db.CheckUserCredByEmail(userCred.UsernameOrEmail, userCred.Password, collection)
+		uid, err = db.CheckUserCredByEmail(userCred.UsernameOrEmail, userCred.Password, collection)
 	} else {
-		err = db.CheckUserCredByUsername(userCred.UsernameOrEmail, userCred.Password, collection)
+		uid, err = db.CheckUserCredByUsername(userCred.UsernameOrEmail, userCred.Password, collection)
 	}
 
 	if err != nil {
@@ -44,6 +45,7 @@ func UserLogin(c *fiber.Ctx, collection *mongo.Collection) error {
 	}
 
 	return c.JSON(fiber.Map{
+		"_id": uid,
 		"msg": "User login successful",
 		"JWT": jwtToken,
 	})

@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CheckUserCredByEmail(email, password string, collection *mongo.Collection) error {
+func CheckUserCredByEmail(email, password string, collection *mongo.Collection) (string, error) {
 	filter := bson.M{"email": email}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -18,6 +18,7 @@ func CheckUserCredByEmail(email, password string, collection *mongo.Collection) 
 
 	// First, get the role to determine which struct to use
 	var roleDoc struct {
+		Id       string `bson:"_id"`
 		Role     string `bson:"role"`
 		Password string `bson:"password"`
 	}
@@ -25,21 +26,21 @@ func CheckUserCredByEmail(email, password string, collection *mongo.Collection) 
 	err := collection.FindOne(ctx, filter).Decode(&roleDoc)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return errors.New("user not found")
+			return "", errors.New("user not found")
 		}
-		return err
+		return "", err
 	}
 
 	// Verify password
 	err = bcrypt.CompareHashAndPassword([]byte(roleDoc.Password), []byte(password))
 	if err != nil {
-		return errors.New("invalid credentials")
+		return "", errors.New("invalid credentials")
 	}
 
-	return nil
+	return roleDoc.Id, nil
 }
 
-func CheckUserCredByUsername(username, password string, collection *mongo.Collection) error {
+func CheckUserCredByUsername(username, password string, collection *mongo.Collection) (string, error) {
 	filter := bson.M{"username": username}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -47,6 +48,7 @@ func CheckUserCredByUsername(username, password string, collection *mongo.Collec
 
 	// First, get the role to determine which struct to use
 	var roleDoc struct {
+		Id       string `bson:"_id"`
 		Role     string `bson:"role"`
 		Password string `bson:"password"`
 	}
@@ -54,16 +56,16 @@ func CheckUserCredByUsername(username, password string, collection *mongo.Collec
 	err := collection.FindOne(ctx, filter).Decode(&roleDoc)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return errors.New("user not found")
+			return "", errors.New("user not found")
 		}
-		return err
+		return "", err
 	}
 
 	// Verify password
 	err = bcrypt.CompareHashAndPassword([]byte(roleDoc.Password), []byte(password))
 	if err != nil {
-		return errors.New("invalid credentials")
+		return "", errors.New("invalid credentials")
 	}
 
-	return nil
+	return roleDoc.Id, nil
 }
