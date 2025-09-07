@@ -4,6 +4,7 @@ import (
 	"github.com/Efojensen/rapport.git/handlers/secure"
 	"github.com/Efojensen/rapport.git/models"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -27,13 +28,15 @@ func SetupOther(c *fiber.Ctx, collection *mongo.Collection) error {
 
 	other.Password = hash
 
-	_, err = collection.InsertOne(c.Context(), other)
-
+	result, err := collection.InsertOne(c.Context(), other)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err": err.Error(),
-		})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"err": err.Error()})
 	}
+
+	if oid, ok := result.InsertedID.(primitive.ObjectID); ok {
+		other.ID = oid
+	}
+
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"msg":   "Other user created successfully",
