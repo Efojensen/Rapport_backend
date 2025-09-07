@@ -7,24 +7,22 @@ import (
 )
 
 func GetSingleUser(c *fiber.Ctx, collection *mongo.Collection) error {
-	var req struct {
-		UserId string `json:"userId"`
-	}
+	userId := c.Params("userId")
 
-	if err := c.BodyParser(&req); err != nil {
+	if userId == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid request body",
+			"error": "User ID are required",
 		})
 	}
 
-	if req.UserId == "" {
+	if userId == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "userId is required",
 		})
 	}
 
 	// Fetch user data from MongoDB
-	user, err := db.GetUserDetails(req.UserId, collection)
+	user, err := db.GetUserDetails(userId, collection)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "User not found",

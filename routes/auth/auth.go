@@ -13,7 +13,7 @@ func SetupAuthRoutes(app *fiber.App, authCollection *mongo.Collection) {
 		return handlers.GetAllUsers(c, authCollection)
 	})
 
-	auth.Get("/single", func (c *fiber.Ctx) error {
+	auth.Get("/single/:userId", func (c *fiber.Ctx) error {
 		return handlers.GetSingleUser(c, authCollection)
 	})
 
